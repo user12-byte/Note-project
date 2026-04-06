@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>微信便签</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .input-area textarea {
+            width: 100%;
+            height: 60px;
+        }
+
+        .input-area input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .message img {
+            max-width: 200px;
+            margin-top: 5px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .delete-link {
+            color: red;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .category-controls {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; height: 100vh;">
+        <div class="sidebar" style="width: 220px; padding: 20px; background-color: #f3f3f3;">
+            <h3>分类</h3>
+            <ul style="list-style: none; padding: 0;">
+                {% for group in categories %}
+                    <li {% if group == current_category %}style="font-weight: bold;"{% endif %}>
+                        <a href="/category/{{ group }}">{{ group }}</a>
+                        <a href="/delete_category/{{ group }}" class="delete-link" onclick="return confirm('确定删除分类吗？')">删除</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <form action="/add_category" method="post" class="category-controls">
+                <input type="text" name="new_category" placeholder="新分类名">
+                <button type="submit">添加</button>
+            </form>
+
+            <form action="/search" method="get" style="margin-top: 20px;">
+                <input type="text" name="q" placeholder="全局搜索关键词..." style="width: 100%;">
+                <button type="submit">搜索</button>
+            </form>
+        </div>
+
+        <div class="main" style="flex-grow: 1; padding: 20px;">
+            <h2>{{ current_category }} 的便签</h2>
+
+            <div class="messages">
+                {% for msg_id, msg in messages %}
+                    <div class="message">
+                        {% set lower = msg|lower %}
+                        {% if lower.endswith('.jpg') or lower.endswith('.png') or lower.endswith('.gif') or lower.endswith('.jpeg') %}
+                            <img src="{{ msg }}">
+                        {% else %}
+                            {{ msg }}
+                        {% endif %}
+                        <a href="/delete_message/{{ msg_id }}/{{ current_category }}" class="delete-link" onclick="return confirm('确定删除这条便签吗？')">删除</a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form action="/send/{{ current_category }}" method="POST" enctype="multipart/form-data" class="input-area">
+                <textarea name="content" placeholder="写点什么吧..."></textarea>
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">发送</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

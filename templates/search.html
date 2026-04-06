@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>搜索结果</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div style="padding: 30px;">
+        <h2>搜索结果：{{ keyword }}</h2>
+        {% if results %}
+            <ul>
+                {% for category, content in results %}
+                    <li>
+                        <strong>[{{ category }}]</strong>
+                        {% if content.lower().endswith('.jpg') or content.lower().endswith('.png') or content.lower().endswith('.gif') or content.lower().endswith('.jpeg') %}
+                            <img src="{{ content }}" style="max-width: 200px;">
+                        {% else %}
+                            {{ content }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>没有找到相关内容。</p>
+        {% endif %}
+        <p><a href="/">← 返回主页</a></p>
+    </div>
+</body>
+</html>
